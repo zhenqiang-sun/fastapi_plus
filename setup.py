@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='fastapi_plus',
-    version='1.0.1.20200831',
+    version='1.0.2.20200831',
     author="szq",
     author_email="zhenqiang.sun@qq.com",
     description='FastAPI项目工程库',
@@ -21,7 +21,8 @@ setup(
         "Operating System :: OS Independent",
     ],
 
-    install_requires=['fastapi', 'uvicorn', 'sqlalchemy', 'pymysql', 'sqlacodegen', 'redis', 'pymongo', 'requests'],
+    install_requires=['fastapi', 'uvicorn', 'sqlalchemy', 'pymysql', 'sqlacodegen', 'redis', 'pymongo', 'requests',
+                      'python-multipart'],
 
     # List additional groups of dependencies here
     extras_require={},
