@@ -69,17 +69,18 @@ class SyncModel(object):
         file_path = 'app/temporary/models.py'
         models_content = self.get_models_content(file_path)
         content_list = models_content.split('\n\nclass ')
-        self.model_header = content_list[0]
-
-        if is_use_base_model:
-            self.is_use_base_model = is_use_base_model
-            self._init_base_model()
 
         if base_model_path:
             self.base_model_path = base_model_path
 
         if model_header:
             self.model_header = model_header
+
+        if is_use_base_model:
+            self.is_use_base_model = is_use_base_model
+            self._init_base_model()
+        else:
+            self.model_header = content_list[0]
 
         for content in content_list:
             self._save_model(content)
