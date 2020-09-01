@@ -1,7 +1,7 @@
 #Fastapi Plus
 这是一个Python FastAPI项目工程库，包含DB、Redis、MongoDB、JSON等工具和基础服务类。
 
-
+[Github: Fastapi Plus](https://github.com/zhenqiang-sun/fastapi_plus/)
 
 ### 组件：
 - FastAPI: https://fastapi.tiangolo.com/

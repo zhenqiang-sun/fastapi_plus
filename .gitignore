@@ -1,3 +1,8 @@
 # IDE
 .idea
 /venv/
+
+#build
+/build/
+/dist/
+/fastapi_plus.egg-info/

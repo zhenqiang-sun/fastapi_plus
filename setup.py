@@ -2,25 +2,27 @@
 FastAPI Plus
 """
 
-from setuptools import find_packages, setup
+import setuptools
 
-setup(
-    name='fastapi_plus',
-    version='1.0.2.20200831',
-    author="szq",
-    author_email="zhenqiang.sun@qq.com",
-    description='FastAPI项目工程库',
-    long_description='这是一个Python FastAPI项目工程库，包含DB、Redis、MongoDB、JSON等工具和基础服务类。',
+with open("README.md", "r", encoding='utf-8') as fh:
+    long_description = fh.read()
+
+setuptools.setup(
+    name="fastapi_plus",
+    version='0.0.2.20200831',
+    author="Zhenqiang Sun",
+    author_email="zhenqiang.sun@gmail.com",
+    description="This is a Python FastAPI project engineering library that includes tools and basic service classes.",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/zhenqiang-sun/fastapi_plus",
-    packages=find_packages(),
+    packages=setuptools.find_packages(),
     classifiers=[
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-
+    python_requires='>=3.6',
     install_requires=[
         'fastapi==0.61.1',
         'uvicorn==0.11.8',
@@ -33,7 +35,4 @@ setup(
         'python-multipart==0.0.5',
         'aiofiles==0.5.0'
     ],
-
-    # List additional groups of dependencies here
-    extras_require={},
 )
