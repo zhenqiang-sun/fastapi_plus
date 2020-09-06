@@ -29,7 +29,6 @@ class SyncModel(object):
     def get_models_content(self, file_path):
         self.sqlacodegen(file_path)
         content = self._get_file_content(file_path)
-        content = content.replace('Person(', 'People(')
         return content
 
     @staticmethod
@@ -100,6 +99,7 @@ class SyncModel(object):
 
     def _use_base_model(self, model_content):
         model_lines = model_content.split('\n')
+        del model_lines[0]
         lines = []
 
         for model_line in model_lines:
@@ -122,10 +122,9 @@ class SyncModel(object):
             content = self._use_base_model(content)
 
         file_name = table_name[len(self.db_config.table_name_prefix):]
-        class_name_ori = self._transform_name(table_name)
         class_name = self._transform_name(file_name)
         file_path = 'app/model/' + file_name + '.py'
-        file_content = self.model_header + 'class ' + content.replace(class_name_ori, class_name, 1)
+        file_content = self.model_header + 'class ' + class_name + '(Base):\n' + content
         file_content = file_content.replace('Column(JSON,', 'Column(LONGTEXT,')
 
         with open(file_path, 'w', encoding='utf-8', newline='\n') as f:
