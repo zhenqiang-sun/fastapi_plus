@@ -10,19 +10,19 @@ class Locker(object):
     :date: 2020-02-11
     """
 
-    redis = RedisUtils()
+    redis: RedisUtils
+
+    def __init__(self):
+        self.redis = RedisUtils()
 
     # 判断是否存在锁
-    @staticmethod
-    def has_lock(key):
-        return Locker.redis.get_string('locker:' + key)
+    def has_lock(self, key):
+        return self.redis.get_string('locker:' + key)
 
     # 加锁
-    @staticmethod
-    def lock(key, expiration=None):
-        Locker.redis.set_string('locker:' + key, str(time.time()), expiration)
+    def lock(self, key, expiration=None):
+        self.redis.set_string('locker:' + key, str(time.time()), expiration)
 
     # 解锁
-    @staticmethod
-    def unlock(key):
-        Locker.redis.delete('locker:' + key)
+    def unlock(self, key):
+        self.redis.delete('locker:' + key)

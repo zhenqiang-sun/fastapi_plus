@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, TIMESTAMP, text
+from sqlalchemy import Column, String, TIMESTAMP, text, DECIMAL, Date
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER, LONGTEXT, TINYINT
 from sqlalchemy.ext.declarative import declarative_base
 
