@@ -8,6 +8,10 @@ from .request_log import create_log, update_log
 
 
 class CustomRoute(APIRoute):
+    """
+    自定义APIRouter
+    """
+
     def get_route_handler(self) -> Callable:
         original_route_handler = super().get_route_handler()
 

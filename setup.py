@@ -9,7 +9,7 @@ with open("README.md", "r", encoding='utf-8') as fh:
 
 setuptools.setup(
     name="fastapi_plus",
-    version='0.1.0.20201118',
+    version='0.1.1.20201118',
     author="Zhenqiang Sun",
     author_email="zhenqiang.sun@gmail.com",
     description="This is a Python FastAPI project engineering library that includes tools and basic service classes.",
@@ -27,7 +27,7 @@ setuptools.setup(
         'fastapi==0.61.2',
         'uvicorn==0.12.2',
         'sqlalchemy==1.3.19',
-        'PyMySQL==0.10.0',
+        'pymysql==0.10.0',
         'sqlacodegen==2.3.0',
         'redis==3.5.3',
         'pymongo==3.11.1',

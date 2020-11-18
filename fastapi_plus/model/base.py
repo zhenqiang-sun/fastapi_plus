@@ -6,6 +6,9 @@ DeclarativeBase = declarative_base()
 
 
 class Base(DeclarativeBase):
+    """
+    基础Model模型对象
+    """
     __abstract__ = True
 
     id = Column(BIGINT(20), primary_key=True, comment='序号')

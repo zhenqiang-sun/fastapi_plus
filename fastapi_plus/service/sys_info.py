@@ -1,7 +1,12 @@
 import platform
 
 
-class SysInfoService:
+class SysInfoService(object):
+    """信息信息服务类.
+
+    获取服务运行系统的基础信息
+    """
+
     @staticmethod
     def get_sys_info():
         return {

@@ -2,6 +2,9 @@ from .base import *
 
 
 class EventLog(Base):
+    """
+    事件记录模型
+    """
     __tablename__ = 'event_log'
     __table_args__ = {'comment': '事件记录'}
 
