@@ -1,7 +1,5 @@
-from typing import List
-
 from ..dao.event import EventDao
-from ..schema.base import ListArgsSchema, ResponseSchema
+from ..schema.base import ListArgsSchema, RespListSchema, RespIdSchema, RespBaseSchema
 
 
 class BaseService(object):
@@ -41,7 +39,7 @@ class BaseService(object):
 
         return self.dao.read(id)
 
-    def list(self, args: ListArgsSchema) -> List[Model]:
+    def list(self, args: ListArgsSchema) -> RespListSchema:
         """读取多条数据.
 
         Args:
@@ -53,7 +51,7 @@ class BaseService(object):
 
         return self.dao.read_list(args)
 
-    def create(self, schema) -> ResponseSchema:
+    def create(self, schema) -> RespIdSchema:
         """创建一条数据.
 
         Args:
@@ -64,8 +62,7 @@ class BaseService(object):
             是否创建成功，创建成功则附加数据id
         """
 
-        res = ResponseSchema()
-
+        resp = RespIdSchema()
         model = self.Model()
 
         self.set_model_by_schema(schema, model)
@@ -79,8 +76,9 @@ class BaseService(object):
         event_log.relation_id = model.id
         self.event_dao.create_event_log(event_log, model)
 
-        res.id = model.id
-        return res
+        resp.id = model.id
+
+        return resp
 
     @staticmethod
     def set_model_by_schema(schema, model):
@@ -100,7 +98,7 @@ class BaseService(object):
         if hasattr(model, 'search'):
             model.search = model.name
 
-    def update(self, schema) -> ResponseSchema:
+    def update(self, schema) -> RespBaseSchema:
         """更新一条数据.
 
         Args:
@@ -111,7 +109,7 @@ class BaseService(object):
             是否更新成功
         """
 
-        resp = ResponseSchema()
+        resp = RespBaseSchema()
 
         model = self.dao.read(schema.id)
 
@@ -131,7 +129,7 @@ class BaseService(object):
 
         return resp
 
-    def delete(self, id: int) -> ResponseSchema:
+    def delete(self, id: int) -> RespBaseSchema:
         """删除单条数据.
 
         Args:
@@ -141,7 +139,7 @@ class BaseService(object):
             是否删除成功
         """
 
-        resp = ResponseSchema()
+        resp = RespBaseSchema()
 
         model = self.dao.read(id)
 

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List, Dict
 
 from pydantic import BaseModel
 
@@ -10,19 +11,52 @@ class BaseSchema(BaseModel):
         json_encoders = JSONEncoders.json_encoders
 
 
-class ResponseSchema(BaseModel):
+class RespBaseSchema(BaseModel):
     code: int = 0
     message: str = 'SUCCESS'
-    id: int = None
+
+
+class RespIdSchema(RespBaseSchema):
+    id: int = 0
+
+
+class RespDetailSchema(RespBaseSchema):
+    detail: dict = None
+
+
+class RespListSchema(RespBaseSchema):
+    page: int = 0
+    size: int = 0
+    total: int = 0
+    page_total: int = 0
+    list: List[Dict] = None
+
+
+class ListFilterSchema(BaseModel):
+    key: str
+    condition: str
+    value: str
+
+
+class ListOrderSchema(BaseModel):
+    key: str
+    condition: str
+
+
+class ListKeySchema(BaseModel):
+    key: str
+    rename: str
 
 
 class ListArgsSchema(BaseModel):
-    page_now: int = 1
-    page_size: int = 10
+    page: int = 1
+    size: int = 10
     keywords: str = None
+    is_deleted: str = None
     user_id: int = None
-    relation_obj: str = None
-    relation_id: int = None
+    filters: List[ListFilterSchema] = None
+    orders: List[ListOrderSchema] = None
+    keys: List[ListKeySchema] = None
 
 
 class UserBaseSchema(BaseSchema):
@@ -37,17 +71,6 @@ class FileBaseSchema(BaseModel):
     id: int
     name: str
     suffix: str
-
-    class Config:
-        orm_mode = True
-
-
-class ListSchema(BaseSchema):
-    id: int
-    name: str
-    remark: str
-    created_time: datetime
-    updated_time: datetime
 
     class Config:
         orm_mode = True

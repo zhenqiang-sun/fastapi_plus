@@ -1,10 +1,11 @@
+import math
 from typing import List
 
-from sqlalchemy import and_
-from sqlalchemy import text
+from sqlalchemy import and_, func
 
-from ..schema.base import ListArgsSchema
+from ..schema.base import ListArgsSchema, ListOrderSchema, ListKeySchema, ListFilterSchema, RespListSchema
 from ..utils.db import DbUtils
+from ..utils.obj2dict import obj2dict
 
 
 class BaseDao(object):
@@ -33,32 +34,6 @@ class BaseDao(object):
             self.Model.user_id == self.user_id,
         ).first()
 
-    def read_list(self, args: ListArgsSchema) -> List[Model]:
-        filter_relation_obj = text('')
-        filter_relation_id = text('')
-        filter_search = text('')
-
-        if args.relation_obj and hasattr(self.Model, 'relation_obj'):
-            filter_relation_obj = self.Model.relation_obj == args.relation_obj
-
-            if args.relation_id and hasattr(self.Model, 'relation_id'):
-                filter_relation_id = self.Model.relation_id == args.relation_id
-
-        if args.keywords and hasattr(self.Model, 'search'):
-            filter_search = and_(*[self.Model.search.like('%' + kw + '%') for kw in args.keywords.split(' ')])
-
-        list = self.db.sess.query(self.Model).filter(
-            self.Model.is_deleted == 0,
-            self.Model.user_id == args.user_id,
-            filter_relation_obj,
-            filter_relation_id,
-            filter_search
-        ).order_by(
-            self.Model.updated_time.desc()
-        ).offset((args.page_now - 1) * args.page_size).limit(args.page_size).all()
-
-        return list
-
     def update(self, model: Model):
         self.db.sess.add(model)
         self.db.sess.flush()
@@ -66,3 +41,112 @@ class BaseDao(object):
     def delete(self, model: Model):
         model.is_deleted = 1
         self.update(model)
+
+    def read_list(self, args: ListArgsSchema) -> RespListSchema:
+        filters = []
+
+        if args.is_deleted != 'all':
+            filters.append(self.Model.is_deleted == 0)
+
+        if args.user_id:
+            filters.append(self.Model.user_id == args.user_id)
+
+        filters.extend(self._handle_list_filters(args.filters))
+
+        if args.keywords and hasattr(self.Model, 'search'):
+            filters.append(and_(*[self.Model.search.like('%' + kw + '%') for kw in args.keywords.split(' ')]))
+
+        query = self.db.sess.query(self.Model).filter(*filters)
+        total = query.count()
+
+        if total > 0:
+            orders = self._handle_list_orders(args.orders)
+            obj_list = query.order_by(*orders).offset((args.page - 1) * args.size).limit(args.size).all()
+        else:
+            obj_list = []
+
+        resp = RespListSchema()
+        resp.page = args.page
+        resp.size = args.size
+        resp.total = total
+        resp.page_total = math.ceil(total / args.size)
+        resp.list = self._handle_list_keys(args.keys, obj_list)
+
+        return resp
+
+    def _handle_list_filters(self, args_filters: ListFilterSchema):
+        filters = []
+
+        if args_filters:
+            for item in args_filters:
+                if hasattr(self.Model, item.key):
+                    attr = getattr(self.Model, item.key)
+
+                    if item.condition == '=':
+                        filters.append(attr == item.value)
+                    elif item.condition == '!=':
+                        filters.append(attr != item.value)
+                    elif item.condition == '<':
+                        filters.append(attr < item.value)
+                    elif item.condition == '>':
+                        filters.append(attr > item.value)
+                    elif item.condition == '<=':
+                        filters.append(attr <= item.value)
+                    elif item.condition == '>=':
+                        filters.append(attr >= item.value)
+                    elif item.condition == 'like':
+                        filters.append(attr.like('%' + item.value + '%'))
+                    elif item.condition == 'in':
+                        filters.append(attr.in_(item.value.split(',')))
+                    elif item.condition == '!in':
+                        filters.append(~attr.in_(item.value.split(',')))
+                    elif item.condition == 'null':
+                        filters.append(attr.is_(None))
+                    elif item.condition == '!null':
+                        filters.append(~attr.isnot(None))
+
+        return filters
+
+    def _handle_list_orders(self, args_orders: ListOrderSchema):
+        orders = []
+
+        if args_orders:
+            for item in args_orders:
+                if hasattr(self.Model, item.key):
+                    attr = getattr(self.Model, item.key)
+
+                    if item.condition == 'desc':
+                        orders.append(attr.desc())
+                    elif item.condition == 'acs':
+                        orders.append(attr)
+                    elif item.condition == 'rand':
+                        orders.append(func.rand())
+
+        return orders
+
+    def _handle_list_keys(self, args_keys: ListKeySchema, obj_list: List):
+        keys = []
+
+        if args_keys:
+            for item in args_keys:
+                if hasattr(self.Model, item.key):
+                    keys.append(item)
+
+        resp_list = []
+
+        for obj in obj_list:
+            dict_1 = obj2dict(obj)
+
+            if keys:
+                dict_2 = {}
+                for item in keys:
+                    if item.rename:
+                        dict_2[item.rename] = dict_1[item.key]
+                    else:
+                        dict_2[item.key] = dict_1[item.key]
+            else:
+                dict_2 = dict_1
+
+            resp_list.append(dict_2)
+
+        return resp_list
