@@ -25,7 +25,7 @@ class BaseObjSchema(BaseModel):
         orm_mode = True  # 为模型实例
 
 
-class RespBaseSchema(BaseModel):
+class RespBaseSchema(BaseSchema):
     """
     基础返回Schema
     """
