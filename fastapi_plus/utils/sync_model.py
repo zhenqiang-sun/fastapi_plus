@@ -17,9 +17,10 @@ class SyncModel(object):
         dao: 当前业务数据处理类
     """
 
+    app_dir: str  # 应用目录名
     model_header = 'from fastapi_plus.model.base import *\n\n\n'
     is_use_base_model = False
-    base_model_path = os.path.dirname(os.path.dirname(__file__)) + '\\model\\base.py'
+    base_model_path = os.path.dirname(os.path.dirname(__file__)) + os.sep + 'model' + os.sep + 'base.py'
     base_model_lines = []
     db_config: DbConfig = None
 
@@ -28,11 +29,16 @@ class SyncModel(object):
 
     def get_models_content(self, file_path):
         self.sqlacodegen(file_path)
-        content = self._get_file_content(file_path)
+        content = self._read_file_content(file_path)
         return content
 
     @staticmethod
-    def _get_file_content(file_path):
+    def _read_file_content(file_path: str) -> str:
+        """
+        读取文件
+        :param file_path:
+        :return:
+        """
         with open(file_path, 'r', encoding='utf-8') as f:
             return f.read()
 
@@ -62,10 +68,13 @@ class SyncModel(object):
         else:
             return None
 
-    def sync(self, db_config: DbConfig, is_use_base_model: bool = False, base_model_path: str = None,
+    def sync(self, app_dir: str == 'app', db_config: DbConfig, is_use_base_model: bool = False,
+             base_model_path: str = None,
              model_header: str = None):
+
+        self.app_dir = app_dir
         self.db_config = db_config
-        file_path = 'app/temporary/models.py'
+        file_path = self.app_dir + os.sep + 'temporary' + os.sep + 'models.py'
         models_content = self.get_models_content(file_path)
         content_list = models_content.split('\n\nclass ')
 
@@ -87,7 +96,7 @@ class SyncModel(object):
         os.remove(file_path)
 
     def _init_base_model(self):
-        content = self._get_file_content(self.base_model_path)
+        content = self._read_file_content(self.base_model_path)
         class_list = content.split('class Base(DeclarativeBase):')
         lines = class_list[1].split('\n')
 
@@ -123,7 +132,7 @@ class SyncModel(object):
 
         file_name = table_name[len(self.db_config.table_name_prefix):]
         class_name = self._transform_name(file_name)
-        file_path = 'app/model/' + file_name + '.py'
+        file_path = self.app_dir + os.sep + 'model' + os.sep + file_name + '.py'
         file_content = self.model_header + 'class ' + class_name + '(Base):\n' + content
         file_content = file_content.replace('Column(JSON,', 'Column(LONGTEXT,')
 
