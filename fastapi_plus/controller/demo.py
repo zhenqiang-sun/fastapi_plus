@@ -3,7 +3,7 @@ from fastapi_plus.schema.base import ListArgsSchema, RespBaseSchema, RespIdSchem
 from fastapi_plus.utils.auth import get_auth_data
 from fastapi_plus.utils.custom_route import CustomRoute
 
-from ..schema.demo import DemoDetailSchema, DemoInfoSchema, DemoRespDetailSchema
+from ..schema.demo import DemoInfoSchema, DemoRespDetailSchema
 from ..service.demo import DemoService
 
 router = APIRouter(route_class=CustomRoute)

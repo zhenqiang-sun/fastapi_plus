@@ -2,8 +2,8 @@ from fastapi_plus.model.base import *
 
 
 class Demo(Base):
-    __tablename__ = 'app'
-    __table_args__ = {'comment': '应用'}
+    __tablename__ = 'demo'
+    __table_args__ = {'comment': 'Demo'}
 
     user_id = Column(BIGINT(20), nullable=False, server_default=text("0"), comment='用户ID')
     category_id = Column(BIGINT(20), nullable=False, server_default=text("0"), comment='分类ID')

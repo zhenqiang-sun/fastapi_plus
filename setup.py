@@ -9,7 +9,7 @@ with open("README.md", "r", encoding='utf-8') as fh:
 
 setuptools.setup(
     name="fastapi_plus",
-    version='0.1.3.20201125',
+    version='0.1.4.20201125',
     author="Zhenqiang Sun",
     author_email="zhenqiang.sun@gmail.com",
     description="This is a Python FastAPI project engineering library that includes tools and basic service classes.",
